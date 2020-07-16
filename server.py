@@ -1,18 +1,32 @@
+import sys
+import subprocess
 import socket
 import select
+from _thread import *
+from no_way_out_game import NoWayOutGame
+
+ENCODING = 'utf-8'
 
 
 class Server(object):
     """ Simple socket server that listens to one single client. """
 
-    def __init__(self, host="0.0.0.0", port=2222):
+    def __init__(self, host="0.0.0.0", port=8888):
         """ Initialize the server with a host and port to listens to. """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        print("Socket created")
         self.host = host
         self.port = port
-        self.socket.bind((host, port))
-        self.socket.listen(1)
+        try:
+            self.socket.bind((host, port))
+            print("Socket bind complete")
+        except socket.error as err:
+            print('Bind failed. Error Code : ' +
+                  str(err[0]) + ' Message ' + err[1])
+            sys.exit(-1)
+
+        self.socket.listen(10)
+        print('Socket now listening')
 
     def close(self):
         """ Close the server socket. """
@@ -26,42 +40,40 @@ class Server(object):
         """ Accept and handle an incoming connection. """
         print("Starting socket server (host %s, port %s)" %
               (self.host, self.port))
-        client_socket, client_address = self.socket.accept()
-        print("Client {} connected".format(client_address))
+        # wait to accept a connection - blocking call
+        while True:
+            client_socket, client_address = self.socket.accept()
+            print("Client {} connected".format(client_address))
+            # start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
+            start_new_thread(client_thread, (client_socket,))
 
-        stop = False
-        while not stop:
-            if client_socket:
-                # Check if the client is still connected and if data is available
-                print("Waiting for client input")
-                try:
-                    rdy_read, rdy_write, socket_error = select.select(
-                        [client_socket, ], [], [])
-                except select.error:
-                    print("Select() failed on socket with {}".format(client_address))
-                    return -1
 
-                print(len(rdy_read) > 0)
-                if len(rdy_read) > 0:
-                    read_data = client_socket.recv(255)
-                    # Check if socket has been closed
-                    if len(read_data) == 0:
-                        print("{} closed the socket.".format(client_address))
-                        stop = True
-                    else:
-                        print(">>> Received: %s" % read_data.rstrip())
-                        if read_data.rstrip() == 'quit':
-                            stop = True
-                        else:
-                            client_socket.send(read_data)
-            else:
-                print("No client is connected, SocketServer can't receive data")
-                stop = True
+def client_thread(socket):
+    # Sending message to connected client
+    # send only takes string
+    socket.send(NoWayOutGame.GAME_START.encode(
+        ENCODING) + "\n".encode(ENCODING))
 
-        # Close socket
-        print("Closing connection with {}".format(client_address))
-        client_socket.close()
-        return 0
+    gameInstance = NoWayOutGame()
+
+    # infinite loop so that function do not terminate and thread do not end.
+    while True:
+        socket.send("\n".encode(ENCODING) +
+                    NoWayOutGame.REQUEST.encode(ENCODING))
+        # Receiving from client
+        data = socket.recv(1024).decode(ENCODING)
+        print(">>> Received: {}".format(data))
+
+        command = data.strip().split(" ")
+        reply = gameInstance.run_action(command)
+
+        if reply == "":
+            reply == "Response>>>>>>>"
+
+        socket.sendall(reply.encode(ENCODING))
+
+    # came out of loop
+    socket.close()
 
 
 if __name__ == "__main__":
