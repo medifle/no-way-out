@@ -67,10 +67,13 @@ def client_thread(socket):
         command = data.strip().split(" ")
         reply = gameInstance.run_action(command)
 
-        if reply == "":
-            reply == "Response>>>>>>>"
+        if reply == "" or reply is None:
+            reply = "Sorry, the command '%s' is not implemented yet." % command[0]
 
         socket.sendall(reply.encode(ENCODING))
+
+        if command[0] == "quit" or command[0] == "exit":
+            break
 
     # came out of loop
     socket.close()
