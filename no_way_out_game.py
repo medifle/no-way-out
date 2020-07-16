@@ -1,27 +1,27 @@
-import random
+import map
 
 ALL_ITEMS = {
-    "book": Item(name="book", description="Pseudo Existence: Universe Simulation", inspection="Not sure there is any connection between the virtual world and my real entity. I gotta be careful here."),
+    "book": Item(name="book", description="Pseudo Existence: Universe Simulation", inspection="Not sure if there is any connection between the virtual world and my real entity. I gotta be careful here."),
     "game console": Item(name="game console", description="Atari Snake, The Last of Us", inspection="Everything feels so real and familiar! But I still can tell this is a simulated world. I am probably inside my buggy program. Anyway, I need to find a way out of here, hopefully I left a \"backdoor\"."),
     "newspaper": Item(name="newspaper", description="A local newspaper", inspection="An outbreak of 'covid-spores' happened months ago...the city was deprecated…"),
     "crowbar": Item(name="crowbar", description="A small crowbar. Useful for things that are stuck.", inspection="It's a black crowbar made out of iron. It's still slightly wet."),
-    "map": Item(name="map", description="Damped handwritten draft.", inspection="[an ascii DRAW]"),
+    "map": Item(name="map", description="A handwritten draft.", inspection=map.content),
     "vault": Item(name="vault", description="The big vault looks so weird, it is even taller than me.", inspection="Looks like the lock was tampered. The tag on the back shows the default combination is \"00000000\"."),
     "broken draft": Item(name="broken draft", description="It is on top of the vault. Full of cryptic formulas and redacted source code. Looks familiar to me. It vaguely reminds me I was a virtual reality engineer…", inspection="...[redacted]...base64...4 char...no validation...xor..."),
     "living room key": Item(name="living room key", description="A small dirty key.", inspection="That should allow me to get out of the basement."),
-    "booklet": Item(name="booklet", description="", inspection=""),
+    "booklet": Item(name="booklet", description="\"How to make smashed pickles\"", inspection="Hmm… Could be tasty"),
     "stairs room key": Item(name="stairs room key", description=" A small dirty key", inspection="This should let me enter stairs room"),
     "mask": Item(name="mask", description="A medical mask, similar to N95", inspection="the tag reads: FLAG{20200318}")
 }
 
 ROOM_MAP = {
-    "hall": Room(name="hall", description="The hall is full of spores. I need a mask.", connect=[ROOM_MAP["living room"], ROOM_MAP["exterior door"]], entry_requirement=ALL_ITEMS["mask"], item=[]),
-    "living room": Room(name="living room", description=" A dusty living room. The sun pierces through cracks in the wall. I see two doors at each end.", connect=[ROOM_MAP["hall"], ROOM_MAP['basement'], ROOM_MAP['stairs roome']], entry_requirement=ALL_ITEMS['living room key'], item=[ALL_ITEMS['book'], ALL_ITEMS['game console'], ALL_ITEMS['newspaper']]),
+    "hall": Room(name="hall", description="The hall is full of spores. I need a mask.", connect=[ROOM_MAP["living room"], ROOM_MAP["entry"]], entry_requirement=ALL_ITEMS["mask"], item=[]),
+    "living room": Room(name="living room", description=" A dusty living room. The sun pierces through cracks in the wall. I see two doors at each end.", connect=[ROOM_MAP["hall"], ROOM_MAP['basement'], ROOM_MAP['stairs room']], entry_requirement=ALL_ITEMS['living room key'], item=[ALL_ITEMS['book'], ALL_ITEMS['game console'], ALL_ITEMS['newspaper']]),
     "basement": Room(name="basement", description="I find myself in a basement.", entry_requirement="", connect=[ROOM_MAP["living room"], ROOM_MAP["hidden room"]], item=[ALL_ITEMS['crowbar'], ALL_ITEMS['map']]),
     "hidden room": Room(name="hidden room", description="A very damp and small room. I hear a dripping sound.", connect=[ROOM_MAP["basement"]], entry_requirement=ALL_ITEMS['crowbar'], item=[ALL_ITEMS['vault'], ALL_ITEMS['broken draft'], ALL_ITEMS['living room key']]),
     "stairs room": Room(name="stairs room", description="I am in stairs room.", connect=[ROOM_MAP["living room"], ROOM_MAP["attic"]], entry_requirement=ALL_ITEMS['stairs room key'], item=[ALL_ITEMS['booklet']]),
     "attic": Room(name="attic", description="", connect=[ROOM_MAP["stairs room"]], entry_requirement="", item=[ALL_ITEMS['stairs room key'], ALL_ITEMS['mask']]),
-    "exterior door": Room(name="exterior door", description="", connect=[ROOM_MAP["hall"]], entry_requirement="", item=[])
+    "entry": Room(name="entry", description="", connect=[ROOM_MAP["hall"]], entry_requirement=None, item=[])
 }
 
 
@@ -46,12 +46,12 @@ class NoWayOutGame:
 
     def run_action(self, action):
         response = None
-        if not check_player_action(action[0]):
+        if not self.check_player_action(action[0]):
             response = "What? I don't understand. Maybe ask for 'help'?"
             return response
 
         if (action[0] == "help"):
-            response = "You can interract with your environment by using the following commands: \n" +\
+            response = "You can interact with your environment by using the following commands: \n" +\
                 "help, search, goto, pickup, inventory, look, inspect, save, restore"
         elif (action[0] == "goto"):
             room_name = "".join(action[1:], " ")
@@ -82,7 +82,7 @@ class NoWayOutGame:
             print("item name: " + item_name)
             item = ALL_ITEMS.get(item_name)
             if item is not None and item in self.current_room.items:
-                self.inventory.append(self.current_room.pickup(item))
+                self.inventory.append(self.current_room.pick_up_item(item))
                 response = "You add it to your inventory"
             else:
                 response = "You did nothing"
