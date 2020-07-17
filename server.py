@@ -72,7 +72,7 @@ def client_thread(socket):
 
         socket.sendall(reply.encode(ENCODING))
 
-        if command[0] == "quit" or command[0] == "exit":
+        if gameInstance.game_ended:
             break
 
     # came out of loop
