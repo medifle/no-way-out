@@ -56,18 +56,18 @@ class NoWayOutGame:
         self.all_items = {
             "book": Item(name="book", description="Pseudo Existence: Universe Simulation", inspection="The book mentioned that a loose connection between simulation and host world was found. Not sure if there is any connection between the virtual world and my real entity. I gotta be careful here."),
             "game console": Item(name="game console", description="Atari Snake, The Last of Us", inspection="Classic games. Everything feels so real and familiar! But I still can tell this is a simulated world. I am probably inside my buggy program. Anyway, I need to find a way out of here, hopefully I left a \"backdoor\"."),
-            "newspaper": Item(name="newspaper", description="A local newspaper", inspection="An outbreak of 'covid-spores' happened months ago...the city was deprecated…"),
+            "newspaper": Item(name="newspaper", description="A local newspaper", inspection="An outbreak of 'covid-spores' happened months ago...the city was deprecated..."),
             "crowbar": Item(name="crowbar", description="A small crowbar. Useful for things that are stuck.", inspection="It's a black crowbar made out of iron. It's still slightly wet."),
             "map": Item(name="map", description="A handwritten draft.", inspection=map.content),
             "vault": Item(name="vault", description="The big vault looks so weird. It is even taller than me.", inspection="Looks like the lock was tampered. The tag on the back shows the default combination is 00000000."),
-            "broken draft": Item(name="broken draft", description="It is on top of the vault. Full of cryptic formulas and redacted source code. Looks familiar to me. It vaguely reminds me I was a virtual reality engineer...", inspection="...[redacted]...base64...4 char...no validation...xor..."),
+            "broken draft": Item(name="broken draft", description="It is on top of the vault. Full of cryptic formulas and redacted source code. Looks familiar to me. It vaguely reminds me I was a virtual reality engineer...", inspection="Some strange words on the back: ...base64...4 char...no validation...xor..."),
             "living room key": Item(name="living room key", description="A small dirty key.", inspection="That should allow me to get out of the basement."),
             "booklet": Item(name="booklet", description="\"How to make smashed pickles\"", inspection="Hmm… Could be tasty"),
             "stairs room key": Item(name="stairs room key", description=" A small dirty key", inspection="This should let me enter stairs room"),
             "mask": Item(name="mask", description="A medical mask, similar to N95", inspection="the tag reads: FLAG{20200318}")
         }
         self.room_map = {
-            "hall": Room(name="hall", description="The hall is full of spores. I need a mask.", connect=["living room", "entry"], entry_requirement=self.all_items["mask"], items=[]),
+            "hall": Room(name="hall", description="The hall is full of spores. I see the entry at the end.", connect=["living room", "entry"], entry_requirement=self.all_items["mask"], items=[]),
             "living room": Room(name="living room", description=" A dusty living room. The sun pierces through cracks in the wall. I see two doors at each end.", connect=["hall", 'basement', 'stairs room'], entry_requirement=self.all_items['living room key'], items=[self.all_items['book'], self.all_items['game console'], self.all_items['newspaper']]),
             "basement": Room(name="basement", description="I find myself in a basement.", entry_requirement=None, connect=["living room", "hidden room"], items=[self.all_items['crowbar'], self.all_items['map']]),
             "hidden room": Room(name="hidden room", description="A very damp and small room. I hear a dripping sound.", connect=["basement"], entry_requirement=self.all_items['crowbar'], items=[self.all_items['vault'], self.all_items['broken draft'], self.all_items['living room key']]),
