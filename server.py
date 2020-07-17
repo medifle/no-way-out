@@ -3,11 +3,12 @@ import socket
 from _thread import *
 from no_way_out_game import NoWayOutGame, ENCODING
 
+PORT = 8888
 
 class Server(object):
     """ Simple socket server that listens to one single client. """
 
-    def __init__(self, host="0.0.0.0", port=8888):
+    def __init__(self, host="0.0.0.0", port=PORT):
         """ Initialize the server with a host and port to listens to. """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("Socket created")

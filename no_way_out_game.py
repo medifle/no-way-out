@@ -50,13 +50,7 @@ class Room:
         return self.name == other.name and self.description == other.description and self.connect == other.connect and self.entry_requirement == other.entry_requirement
 
 
-def gen_inventory_outline(inventory: List[Item]) -> List[str]:
-    outline = []
-    for i in inventory:
-        outline.append(i.name)
-    return outline
-
-
+# To minimize output size, it only accept a list of item name in inventory
 class SavedGame():
     def __init__(self, room_name: str, inventory: List[str]):
         self.current_room_name = room_name
@@ -91,7 +85,7 @@ class NoWayOutGame:
             "stairs room key": Item(name="stairs room key", description=" A small dirty key",
                                     inspection="This should let me enter stairs room"),
             "mask": Item(name="mask", description="A medical mask, similar to N95",
-                         inspection="the tag reads: FLAG{20200318}")
+                         inspection="The tag reads: FLAG{Justtheb3ginn1ng}.")
         }
         self.room_map = {
             "hall": Room(name="hall", description="The hall is full of spores. I see the entry at the end.",
@@ -114,7 +108,7 @@ class NoWayOutGame:
                                 items=[self.all_items['booklet']]),
             "attic": Room(name="attic", description="I am in attic.", connect=["stairs room"], entry_requirement=None,
                           items=[self.all_items['stairs room key'], self.all_items['mask']]),
-            "entry": Room(name="entry", description="", connect=["hall"], entry_requirement=None, items=[])
+            "entry": Room(name="entry", description="...", connect=["hall"], entry_requirement=Item(), items=[])
         }
         self.current_room = self.room_map['basement']
         self.inventory = []
@@ -190,8 +184,8 @@ class NoWayOutGame:
             response = "Here is your saved game: \n"
             response += self.gen_save().decode(ENCODING)
         elif action[0] == "restore":
-            a = "Saved game successfully restored! \n"
-            pass
+            saved_game = " ".join(action[1:])
+            response = self.restore_save(saved_game)
         elif action[0] == "operate":
             item_name = " ".join(action[1:])
             if action[1] != "vault":
@@ -212,6 +206,35 @@ class NoWayOutGame:
         return response
 
     def gen_save(self):
-        saved_game = SavedGame(self.current_room.name, gen_inventory_outline(self.inventory))
+        saved_game = SavedGame(self.current_room.name, self.gen_inventory_outline(self.inventory))
         pickled_save = pickle.dumps(saved_game, 0)  # protocol version 0
         return encryption.encrypt(pickled_save)
+
+    def restore_save(self, saved_game) -> str:
+        decrypted = encryption.decrypt(saved_game)
+        if decrypted == "decrypt failed":
+            return "restore failed"
+        try:
+            unpickled = pickle.loads(decrypted)  # unpickled should be a SavedGame object
+            room = self.room_map.get(unpickled.current_room_name)
+            if room is not None:
+                self.current_room = room
+            self.inventory = self.gen_full_inventory(unpickled.inventory)
+            return "Saved game successfully restored! \n" + self.current_room.description
+        except Exception as e:
+            print("Unpickling failed: ", e)
+            return "That's some funny looking base64. restore failed."
+
+    def gen_inventory_outline(self, inventory: List[Item]) -> List[str]:
+        outline = []
+        for i in inventory:
+            outline.append(i.name)
+        return outline
+
+    def gen_full_inventory(self, outline: List[str]) -> List[Item]:
+        inventory = []
+        for item_name in outline:
+            item = self.all_items.get(item_name)
+            if item is not None:
+                inventory.append(item)
+        return inventory
