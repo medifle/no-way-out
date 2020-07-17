@@ -127,7 +127,7 @@ class NoWayOutGame:
 
         if action[0] == "help":
             response = "You can interact with your environment by using the following commands: \n" + \
-                       " ".join(self.PLAYER_ACTIONS)
+                       ", ".join(self.PLAYER_ACTIONS)
         elif action[0] == "goto":
             room_name = " ".join(action[1:])
             print("room: " + room_name)
