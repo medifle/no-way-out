@@ -55,12 +55,12 @@ class NoWayOutGame:
     def __init__(self, current_room=None, inventory=None):
         self.all_items = {
             "book": Item(name="book", description="Pseudo Existence: Universe Simulation", inspection="The book mentioned that a loose connection between simulation and host world was found. Not sure if there is any connection between the virtual world and my real entity. I gotta be careful here."),
-            "game console": Item(name="game console", description="Atari Snake, The Last of Us", inspection="Classic games. Everything feels so real and familiar! But I still can tell this is a simulated world. I am probably inside my buggy program. Anyway, I need to find a way out of here, hopefully I left a \"backdoor\"."),
+            "game console": Item(name="game console", description="Atari Snake, The Last of Us", inspection="Classic games. Everything feels so real and familiar! But I can still tell this is a simulated world. I am probably inside my buggy program. Anyway, I need to find a way out of here, hopefully I left a \"backdoor\"."),
             "newspaper": Item(name="newspaper", description="A local newspaper", inspection="An outbreak of 'covid-spores' happened months ago...the city was deprecated..."),
             "crowbar": Item(name="crowbar", description="A small crowbar. Useful for things that are stuck.", inspection="It's a black crowbar made out of iron. It's still slightly wet."),
             "map": Item(name="map", description="A handwritten draft.", inspection=map.content),
             "vault": Item(name="vault", description="The big vault looks so weird. It is even taller than me.", inspection="Looks like the lock was tampered. The tag on the back shows the default combination is 00000000."),
-            "broken draft": Item(name="broken draft", description="It is on top of the vault. Full of cryptic formulas and redacted source code. Looks familiar to me. It vaguely reminds me I was a virtual reality engineer...", inspection="Some strange words on the back: ...base64...4 char...no validation...xor..."),
+            "broken draft": Item(name="broken draft", description="It is on top of the vault.", inspection="Full of cryptic formulas and redacted source code. Looks familiar to me. It vaguely reminds me I was a virtual reality engineer.\nFound some strange words on the back: ...base64...4 char...no validation...xor..."),
             "living room key": Item(name="living room key", description="A small dirty key.", inspection="That should allow me to get out of the basement."),
             "booklet": Item(name="booklet", description="\"How to make smashed pickles\"", inspection="Hmm… Could be tasty"),
             "stairs room key": Item(name="stairs room key", description=" A small dirty key", inspection="This should let me enter stairs room"),
@@ -123,10 +123,10 @@ class NoWayOutGame:
         elif action[0] == "inspect":
             item_name = " ".join(action[1:])
             item = self.all_items.get(item_name)
-            if item is not None and item in self.inventory:
+            if item is not None and (item in self.inventory or item in self.current_room.items):
                 response = item.inspection
             else:
-                response = "The item is not in your inventory yet."
+                response = "Item not found."
         elif action[0] == "pickup":
             item_name = " ".join(action[1:])
             print("item name: " + item_name)
@@ -137,7 +137,7 @@ class NoWayOutGame:
                 if item is not None and item in self.current_room.items:
                     self.current_room.pick_up_item(item)
                     self.inventory.append(item)
-                    response = "You add it to your inventory"
+                    response = "You added it to your inventory"
                 else:
                     response = "You did nothing"
 
