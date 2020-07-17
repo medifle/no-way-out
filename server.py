@@ -1,11 +1,7 @@
 import sys
-import subprocess
 import socket
-import select
 from _thread import *
-from no_way_out_game import NoWayOutGame
-
-ENCODING = 'utf-8'
+from no_way_out_game import NoWayOutGame, ENCODING
 
 
 class Server(object):

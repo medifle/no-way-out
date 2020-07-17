@@ -70,7 +70,6 @@ def decrypt(b64_cipher_bytes):
 #print(dc)
 
 
-
-ss = b"ccopy_reg\n_reconstructor\np0\n(clayout\nSavedGame\np1\nc__builtin__\nobject\np2\nNtp3\nRp4\n(dp5\nVinventory\np6\n(lp7\ng0\n(clayout\nItem\np8\ng2\nNtp9\nRp10\n(dp11\nVname\np12\nVcrowbar\np13\nsVdescription\np14\nVA small crowbar. Usefull for things that are stuck.\np15\nsVinspect\np16\nVIt\'s a black crowbar made out of iron. It\'s still slightly wet\np17\nsbag0\n(g8\ng2\nNtp18\nRp19\n(dp20\ng12\nVbasement key\np21\nsg14\nVA small dirty key.\np22\nsg16\nVThat should allow me to get out of the basement.\np23\nsbasVcurrent_room_name\np24\nVattic\np25\nsb."
-ec = encrypt(ss)
-print(ec)
+# ss = b"ccopy_reg\n_reconstructor\np0\n(clayout\nSavedGame\np1\nc__builtin__\nobject\np2\nNtp3\nRp4\n(dp5\nVinventory\np6\n(lp7\ng0\n(clayout\nItem\np8\ng2\nNtp9\nRp10\n(dp11\nVname\np12\nVcrowbar\np13\nsVdescription\np14\nVA small crowbar. Usefull for things that are stuck.\np15\nsVinspect\np16\nVIt\'s a black crowbar made out of iron. It\'s still slightly wet\np17\nsbag0\n(g8\ng2\nNtp18\nRp19\n(dp20\ng12\nVbasement key\np21\nsg14\nVA small dirty key.\np22\nsg16\nVThat should allow me to get out of the basement.\np23\nsbasVcurrent_room_name\np24\nVattic\np25\nsb."
+# ec = encrypt(ss)
+# print(ec)
