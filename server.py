@@ -3,14 +3,18 @@ import socket
 from _thread import *
 from no_way_out_game import NoWayOutGame, ENCODING
 
-PORT = 8888
+PORT = 7000
 
 class Server(object):
+    # https://theembeddedlab.com/tutorials/simple-socket-server-python/
     """ Simple socket server that listens to one single client. """
 
     def __init__(self, host="0.0.0.0", port=PORT):
         """ Initialize the server with a host and port to listens to. """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # https://stackoverflow.com/a/4466035/4908864
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
         print("Socket created")
         self.host = host
         self.port = port
@@ -41,7 +45,8 @@ class Server(object):
         while True:
             client_socket, client_address = self.socket.accept()
             print("Client {} connected".format(client_address))
-            # start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
+            # start new thread takes 1st argument as a function name to be run,
+            # second is the tuple of arguments to the function.
             start_new_thread(client_thread, (client_socket,))
 
 

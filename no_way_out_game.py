@@ -5,11 +5,13 @@ from typing import List
 
 ENCODING = 'utf-8'
 
+
 class Item:
-    def __init__(self, description=None, inspection=None, name=None):
+    def __init__(self, description=None, inspection=None, name=None, help=None):
         self.description = description
         self.inspection = inspection
         self.name = name
+        self.help = help
 
     def __str__(self):
         return "    - {}: {}\n".format(self.name, self.description)
@@ -75,7 +77,8 @@ class NoWayOutGame:
                             inspection="It's a black crowbar made out of iron. It's still slightly wet."),
             "map": Item(name="map", description="A handwritten draft.", inspection=map.content),
             "vault": Item(name="vault", description="The big vault looks so weird. It is even taller than me.",
-                          inspection="Looks like the lock was tampered.\nThe tag on the back shows the default combination is 00000000."),
+                          inspection="Looks like the lock was tampered.\nThe tag on the back shows the default combination is 00000000.",
+                          help="Try to use 'operate vault [8 digits]', e.g. operate vault 00000000."),
             "broken draft": Item(name="broken draft", description="It is on top of the vault.",
                                  inspection="Full of cryptic formulas and redacted source code. Looks familiar to me. It vaguely reminds me I was a virtual reality engineer.\nFound some strange words on the back: ...base64...4 char...no validation...xor..."),
             "living room key": Item(name="living room key", description="A small dirty key.",
@@ -140,7 +143,7 @@ class NoWayOutGame:
                     if room_name == "hall":
                         response = "I can see spores in the air through the door window. Maybe I need a mask."
                     elif room_name == "entry":
-                        response = "Damn! It's totally blocked by the outside"
+                        response = "Damn! It's totally blocked by the outside."
                     elif room_name == "stairs room":
                         response = room_name + " is locked inside."
                     else:
@@ -164,18 +167,16 @@ class NoWayOutGame:
         elif action[0] == "pickup":
             item_name = " ".join(action[1:])
             print("item name: " + item_name)
-            if item_name == "vault":  # cannot pickup vault, but you can operate it
-                response = "Can't pickup that big vault. You can use operate command to open it.\nTry to use " \
-                           "'operate vault [8 digits]', e.g. operate vault 00000000."
-            else:
-                item = self.all_items.get(item_name)
-                if item is not None and item in self.current_room.items:
+            item = self.all_items.get(item_name)
+            if item is not None and item in self.current_room.items:
+                if item_name == "vault":  # cannot pickup vault, but you can operate it
+                    response = "Can't pickup that big vault. " + "Maybe I can try to operate it?"
+                else:
                     self.current_room.pick_up_item(item)
                     self.inventory.append(item)
-                    response = "You added it to your inventory"
-                else:
-                    response = "You did nothing"
-
+                    response = "I added it to my inventory."
+            else:
+                response = "Item not found."
         elif action[0] == "inventory":
             response = "You have the following items: \n"
             for item in self.inventory:
@@ -187,18 +188,32 @@ class NoWayOutGame:
             saved_game = " ".join(action[1:])
             response = self.restore_save(saved_game)
         elif action[0] == "operate":
-            item_name = " ".join(action[1:])
-            if action[1] != "vault":
-                response = "There is nothing you can do with the item: " + item_name
+            print("action", action)
+            if len(action) == 1:
+                response = "I need to choose an item to operate."
             else:
-                if action[-1] == "00000000":
-                    response = "The vault opened, but there is nothing inside.\n" \
-                               "It closed automatically a few seconds later."
-                elif action[-1] == "15200717":  # PERFECT_END
-                    self.game_ended = True
-                    response = "The vault opened! It looks like a portal I can enter... [PERFECT_END]"
+                item_name = " ".join(action[1:])
+                item = self.all_items.get(item_name)
+                if item is None:
+                    item_name = " ".join(action[1:-1])
+                    item = self.all_items.get(item_name)
+                if item is not None and item in self.current_room.items:
+                    if item_name == "vault":
+                        if len(action) == 3:
+                            if action[-1] == "00000000":
+                                response = "The vault opened, but nothing inside.\n" \
+                                           "To my surprise, it closed automatically after a few seconds."
+                            elif action[-1] == "15200717":  # PERFECT_END
+                                self.game_ended = True
+                                response = "The vault opened! It looks like a portal I can enter... [PERFECT_END]"
+                            else:
+                                response = "Failed to open the vault."
+                        else:
+                            response = item.help
+                    else:
+                        response = "I can't operate " + item_name + "."
                 else:
-                    response = "Failed to open the vault."
+                    response = "Item not found."
         elif action[0] == "exit":
             self.game_ended = True
             response = "Game exited."
