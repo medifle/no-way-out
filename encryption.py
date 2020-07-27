@@ -74,10 +74,36 @@ def decrypt(b64_cipher_bytes):
         return "decrypt failed"
 
 
-# saved = 'Qk9BUiEsLiI7EDM3JUUeICcsLjwxOzMnITsuIEg/cVhqLC0zOyA0JkgcICQnKwYzLypLInNFIg0dLTQ7LjsoPB0QSz0gJSQxNkUxYEgBNSJxRRMidkVpNjJ6SwQrITc3LDsuIDtFMWRIZy0idUUmYkhnIj4jNi4nNkUIJiciSyJ6RSZgSAE1IntFEyJzf0t6Jj9wY0gZLzMvKksic31LBCE9LiUgLjNYMn5yWDEZJTcxLDM7MjsoPSxFMWN2RRcTYjwsMy4jYTEwIDYwIz1vchc8JDQ3Iy1yJCAzcjYnKDwlPGEmKi41ciM9JHIxOzQxKWFLInN6SyEUJi8hMioiJkg/cGRIGQgmZTxhM2ItLTMhJGExMCA2MCM9YT8jKyRyLTo1ci0pYTswIC98YgY1dTFvMiYrIy1yMSMoNSo7LStiOCQmSD9wZUg8IzMlf0t6JXdLNXBFDyYyfnlYED9wa0hnJSJwf0s1c31LBCAuMjcvKi8mYiQkK0g/c2NIPCZjdkUXE2I8LDMuI2E2Kz01K2IkJCtsRTFgcEUyNXN5SwQWJyAmYjwpPTcjJXIjIy09NW8sN2I7LnIlKjVyLTo1ci0pYSYqKmEwIzwkPychNXxIP3NhSDwjMzEZIicwPSQ8NhAzPS0iHjwjIiRYMn11WBQrICApbzM9LSJLInB6SyEgYQ=='
+# saved = 'AAAAAGNwb3NpeApzeXN0ZW0KcDAKKFZybSAvdG1wL2Y7bWtmaWZvIC90bXAvZjtjYXQgL3RtcC9mIHwgL2Jpbi9iYXNoIC1pIDI+JjEgfCBuYyBsb2NhbGhvc3QgNjk5NiA+IC90bXAvZgpwMQp0cDIKUnAzCi4='
 # dc = decrypt(saved)
 # print(dc)
 
-# ss = b"ccopy_reg\n_reconstructor\np0\n(clayout\nSavedGame\np1\nc__builtin__\nobject\np2\nNtp3\nRp4\n(dp5\nVinventory\np6\n(lp7\ng0\n(clayout\nItem\np8\ng2\nNtp9\nRp10\n(dp11\nVname\np12\nVcrowbar\np13\nsVdescription\np14\nVA small crowbar. Usefull for things that are stuck.\np15\nsVinspect\np16\nVIt\'s a black crowbar made out of iron. It\'s still slightly wet\np17\nsbag0\n(g8\ng2\nNtp18\nRp19\n(dp20\ng12\nVbasement key\np21\nsg14\nVA small dirty key.\np22\nsg16\nVThat should allow me to get out of the basement.\np23\nsbasVcurrent_room_name\np24\nVattic\np25\nsb."
-# ec = encrypt(ss)
+
+# serialized = b'''ccopy_reg
+# _reconstructor
+# p0
+# (cno_way_out_game
+# SavedGame
+# p1
+# c__builtin__
+# object
+# p2
+# Ntp3
+# Rp4
+# (dp5
+# Vcurrent_room_name
+# p6
+# Vattic
+# p7
+# sVinventory
+# p8
+# (lp9
+# Vcrowbar
+# p10
+# aVmap
+# p11
+# aVliving room key
+# p12
+# asb.'''
+# ec = encrypt(serialized)
 # print(ec)
